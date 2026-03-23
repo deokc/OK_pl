@@ -24,7 +24,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
+            overflow: hidden; /* PC에서는 스크롤 없이 고정 */
         }
 
         .main-container {
@@ -141,16 +141,19 @@
 
         .track-duration { color: var(--text-dim); font-size: 0.8rem; }
 
-        /* 모바일 반응형 코드 추가 */
+        /* 모바일 반응형 스크롤 허용 코드 */
         @media (max-width: 768px) {
             body {
-                height: 100dvh; /* 모바일 브라우저 툴바 대응 */
+                height: auto; /* 고정 높이 해제 */
+                min-height: 100vh;
+                overflow-y: auto; /* 모바일에서는 세로 스크롤 허용 */
+                align-items: flex-start; /* 모바일 화면 최상단부터 컨텐츠 배치 */
+                padding: 20px 0;
             }
             .main-container {
                 flex-direction: column;
-                height: 95vh; /* 모바일 화면에 꽉 차게 */
-                width: 95%;
-                border-radius: 16px;
+                height: auto; /* 고정 높이 해제, 내용물에 맞게 늘어남 */
+                width: 90%;
             }
             .player-left {
                 flex: unset;
@@ -174,8 +177,9 @@
                 font-size: 2.5rem;
             }
             .playlist-right {
-                flex: 1;
-                padding: 15px 20px;
+                flex: unset;
+                padding: 20px;
+                height: 350px; /* 플레이리스트 영역 높이를 확보하여 내부에서 스크롤되도록 설정 */
             }
             .playlist-header {
                 font-size: 1.1rem;
