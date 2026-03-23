@@ -141,6 +141,48 @@
 
         .track-duration { color: var(--text-dim); font-size: 0.8rem; }
 
+        /* 모바일 반응형 코드 추가 */
+        @media (max-width: 768px) {
+            body {
+                height: 100dvh; /* 모바일 브라우저 툴바 대응 */
+            }
+            .main-container {
+                flex-direction: column;
+                height: 95vh; /* 모바일 화면에 꽉 차게 */
+                width: 95%;
+                border-radius: 16px;
+            }
+            .player-left {
+                flex: unset;
+                padding: 20px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .album-cover {
+                margin-bottom: 15px;
+            }
+            .now-playing-info h2 {
+                font-size: 1.4rem;
+            }
+            .now-playing-info p {
+                margin: 4px 0 15px;
+            }
+            .buttons {
+                gap: 20px;
+            }
+            .play-btn {
+                font-size: 2.5rem;
+            }
+            .playlist-right {
+                flex: 1;
+                padding: 15px 20px;
+            }
+            .playlist-header {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+        }
     </style>
 </head>
 <body>
