@@ -24,7 +24,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden; /* PC에서는 스크롤 없이 고정 */
+            overflow: hidden;
         }
 
         .main-container {
@@ -40,7 +40,6 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
-        /* 왼쪽: 현재 재생 구역 */
         .player-left {
             flex: 1.2;
             padding: 40px;
@@ -70,10 +69,20 @@
         }
 
         .now-playing-info p {
-            color: var(--neon-cyan); margin: 8px 0 20px; font-size: 1rem; opacity: 0.8;
+            color: var(--neon-cyan); margin: 8px 0 10px; font-size: 1rem; opacity: 0.8;
+            text-transform: uppercase; font-weight: bold;
         }
 
-        /* 컨트롤 및 프로그레스바 */
+        /* 곡 설명 스타일 추가 */
+        .track-desc {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            min-height: 3em;
+            word-break: keep-all;
+        }
+
         .audio-controls { width: 100%; }
         
         .progress-area {
@@ -97,7 +106,6 @@
         .btn:hover { opacity: 1; transform: scale(1.1); }
         .play-btn { font-size: 3rem; opacity: 1; color: var(--neon-cyan); }
 
-        /* 오른쪽: 플레이리스트 구역 */
         .playlist-right {
             flex: 1;
             padding: 30px;
@@ -141,51 +149,11 @@
 
         .track-duration { color: var(--text-dim); font-size: 0.8rem; }
 
-        /* 모바일 반응형 스크롤 허용 코드 */
         @media (max-width: 768px) {
-            body {
-                height: auto; /* 고정 높이 해제 */
-                min-height: 100vh;
-                overflow-y: auto; /* 모바일에서는 세로 스크롤 허용 */
-                align-items: flex-start; /* 모바일 화면 최상단부터 컨텐츠 배치 */
-                padding: 20px 0;
-            }
-            .main-container {
-                flex-direction: column;
-                height: auto; /* 고정 높이 해제, 내용물에 맞게 늘어남 */
-                width: 90%;
-            }
-            .player-left {
-                flex: unset;
-                padding: 20px;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            }
-            .album-cover {
-                margin-bottom: 15px;
-            }
-            .now-playing-info h2 {
-                font-size: 1.4rem;
-            }
-            .now-playing-info p {
-                margin: 4px 0 15px;
-            }
-            .buttons {
-                gap: 20px;
-            }
-            .play-btn {
-                font-size: 2.5rem;
-            }
-            .playlist-right {
-                flex: unset;
-                padding: 20px;
-                height: 350px; /* 플레이리스트 영역 높이를 확보하여 내부에서 스크롤되도록 설정 */
-            }
-            .playlist-header {
-                font-size: 1.1rem;
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-            }
+            body { height: auto; min-height: 100vh; overflow-y: auto; align-items: flex-start; padding: 20px 0; }
+            .main-container { flex-direction: column; height: auto; width: 90%; }
+            .player-left { flex: unset; padding: 25px; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+            .playlist-right { flex: unset; padding: 25px; height: 350px; }
         }
     </style>
 </head>
@@ -198,7 +166,8 @@
         </div>
         <div class="now-playing-info">
             <h2 id="displayTitle">트랙을 선택하세요</h2>
-            <p id="displayAlbum">OK-Playlist</p>
+            <p id="displayAlbum">OK Playlist</p>
+            <div class="track-desc" id="displayDesc">기묘한 사건들... 의뢰 대기 중.</div>
         </div>
         <div class="audio-controls">
             <div class="progress-area" id="progressContainer">
@@ -213,41 +182,44 @@
     </div>
 
     <div class="playlist-right">
-        <div class="playlist-header">다음 트랙</div>
-        <ul class="track-list" id="trackList">
-            </ul>
+        <div class="playlist-header">NEXT TRACKS</div>
+        <ul class="track-list" id="trackList"></ul>
     </div>
 </div>
 
 <audio id="mainAudio"></audio>
 
 <script>
-    // 🎵 깃허브 링크를 원본(raw) 파일 링크로 수정했습니다!
     const playlist = [
         {
             title: "우리가 누구?",
             link: "https://raw.githubusercontent.com/deokc/OK_pl/main/%EC%9A%B0%EB%A6%AC%EA%B0%80%20%EB%88%84%EA%B5%AC_02.mp3",
-            duration: "2:46"
+            duration: "2:46",
+            desc: "바로 바로~ 어떤 기묘한 의뢰든 해결하는 '만사 오케이 해결사'!"
         },
         {
             title: "우리가 누구? (k-pop.ver)",
             link: "https://raw.githubusercontent.com/deokc/OK_pl/main/%EC%9A%B0%EB%A6%AC%EA%B0%80%20%EB%88%84%EA%B5%AC_04.mp3",
-            duration: "3:02"
+            duration: "3:02",
+            desc: "K-POP 비트로 재탄생한 해결사 홍보곡."
         },
         {
             title: "곰방대 연기처럼",
             link: "https://raw.githubusercontent.com/deokc/OK_pl/main/%EA%B3%B0%EB%B0%A9%EB%8C%80%20%EC%97%B0%EA%B8%B0%EC%B2%98%EB%9F%BC_02.mp3",
-            duration: "5:23"
+            duration: "5:23",
+            desc: "이로토리 골동품점... 렌지의 테마곡."
         },
         {
             title: "When Belief Becomes Real",
             link: "https://raw.githubusercontent.com/deokc/OK_pl/main/When%20Belief%20Becomes%20Real_03.mp3",
-            duration: "3:49"
+            duration: "3:49",
+            desc: "믿으면 안 돼... 소문이 실체가 되어 당신을 찾아올 거야..."
         },
         {
             title: "도시의 속삭임",
             link: "https://raw.githubusercontent.com/deokc/OK_pl/main/%EB%8F%84%EC%8B%9C%EC%9D%98%20%EC%86%8D%EC%82%AD%EC%9E%84_02.mp3",
-            duration: "3:14"
+            duration: "3:14",
+            desc: "정체불명의 속삭임과 도시 괴담의 시작을 담아낸 곡."
         }
     ];
 
@@ -257,10 +229,10 @@
     const progressBar = document.getElementById('progressBar');
     const progressContainer = document.getElementById('progressContainer');
     const displayTitle = document.getElementById('displayTitle');
+    const displayDesc = document.getElementById('displayDesc');
 
     let currentIndex = 0;
 
-    // 리스트 화면 생성
     function renderPlaylist() {
         trackListElem.innerHTML = '';
         playlist.forEach((track, index) => {
@@ -276,58 +248,47 @@
         });
     }
 
-    // 곡 로드 및 재생
     function loadTrack(index) {
         currentIndex = index;
         const track = playlist[index];
         audio.src = track.link;
         displayTitle.textContent = track.title;
+        displayDesc.textContent = track.desc; // 설명 업데이트 추가
         
         renderPlaylist();
         audio.play();
-        playBtn.innerHTML = "&#x23F8;"; // 일시정지 아이콘
+        playBtn.innerHTML = "&#x23F8;";
     }
 
     function togglePlay() {
         if (audio.paused) {
             if (!audio.src) loadTrack(0);
-            else {
-                audio.play();
-                playBtn.innerHTML = "&#x23F8;";
-            }
+            else { audio.play(); playBtn.innerHTML = "&#x23F8;"; }
         } else {
             audio.pause();
             playBtn.innerHTML = "&#x23F5;";
         }
     }
 
-    function nextTrack() {
-        currentIndex = (currentIndex + 1) % playlist.length;
-        loadTrack(currentIndex);
-    }
+    function nextTrack() { currentIndex = (currentIndex + 1) % playlist.length; loadTrack(currentIndex); }
+    function prevTrack() { currentIndex = (currentIndex - 1 + playlist.length) % playlist.length; loadTrack(currentIndex); }
 
-    function prevTrack() {
-        currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-        loadTrack(currentIndex);
-    }
-
-    // 프로그레스 바 업데이트
     audio.ontimeupdate = () => {
-        const pct = (audio.currentTime / audio.duration) * 100;
-        progressBar.style.width = pct + "%";
+        if (!isNaN(audio.duration)) {
+            const pct = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = pct + "%";
+        }
     };
 
-    // 프로그레스 바 클릭 시 이동
     progressContainer.onclick = (e) => {
         const width = progressContainer.clientWidth;
         const clickX = e.offsetX;
-        audio.currentTime = (clickX / width) * audio.duration;
+        if (!isNaN(audio.duration)) {
+            audio.currentTime = (clickX / width) * audio.duration;
+        }
     };
 
-    // 곡 끝나면 다음 곡으로
     audio.onended = nextTrack;
-
-    // 초기 실행
     renderPlaylist();
 </script>
 
